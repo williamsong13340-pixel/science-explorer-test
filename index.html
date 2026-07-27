@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>你是哪种科学探索者？——科学特质图谱测试</title>
+    
+    <!-- External Dependencies: Chart.js, html2canvas, jsPDF, Google Fonts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Apple Aesthetic Design Tokens --- */
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.78);
+            --card-border: rgba(255, 255, 255, 0.85);
+            --accent-blue: #0071e3;
+            --accent-blue-hover: #0077ed;
+            --accent-indigo: #5e5ce6;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --surface-subtle: rgba(240, 240, 245, 0.6);
+            --glass-blur: blur(25px);
+            --radius-large: 24px;
+            --radius-medium: 16px;
+            --radius-small: 12px;
+            --shadow-subtle: 0 10px 40px rgba(0, 0, 0, 0.04);
+            --shadow-elevated: 0 20px 60px rgba(0, 0, 0, 0.08);
+            --gradient-accent: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Noto Sans SC", sans-serif;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: var(--font-stack);
+            background: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 24px 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Mesh */
+        body::before {
+            content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(0, 113, 227, 0.08) 0%, rgba(94, 92, 230, 0.04) 50%, rgba(245, 245, 247, 0) 70%);
+            z-index: -1; pointer-events: none;
+        }
+        body::after {
+            content: ''; position: fixed; bottom: -200px; right: -100px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(94, 92, 230, 0.06) 0%, rgba(245, 245, 247, 0) 70%);
+            z-index: -1; pointer-events: none;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 660px;
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius-large);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-elevated);
+            padding: 40px 28px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Apple Headings */
+        .app-header { text-align: center; margin-bottom: 36px; }
+        .app-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--accent-blue);
+            background: rgba(0, 113, 227, 0.08);
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            margin: 0 0 10px 0;
+            line-height: 1.25;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: var(--radius-medium);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+            outline: none;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 113, 227, 0.25);
+        }
+        .btn-primary:hover {
+            opacity: 0.96;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(0, 113, 227, 0.35);
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary {
+            background: rgba(240, 240, 245, 0.8);
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            margin-top: 16px;
+        }
+        .btn-secondary:hover { background: rgba(230, 230, 238, 0.9); }
+        .btn:disabled { background: #e5e5ea; color: #a1a1a6; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        /* Screen 1: Auth */
+        #auth-screen { text-align: center; padding: 10px 0; }
+        .disclaimer-card {
+            background: var(--surface-subtle);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            text-align: left;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .disclaimer-card strong { color: var(--text-primary); }
+        .lock-icon {
+            width: 64px; height: 64px;
+            background: #ffffff;
+            border-radius: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: var(--shadow-subtle);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .auth-input {
+            width: 100%;
+            max-width: 340px;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: 1.5px solid #d2d2d7;
+            border-radius: var(--radius-medium);
+            background: #ffffff;
+            color: var(--accent-blue);
+            outline: none;
+            transition: all 0.25s ease;
+            margin-bottom: 24px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .auth-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        }
+
+        /* Screen 2: Quiz */
+        #quiz-screen { display: none; }
+        .notice-pill {
+            background: rgba(0, 113, 227, 0.06);
+            border-left: 3px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: var(--radius-small);
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .quiz-guide {
+            background: var(--surface-subtle);
+            border-radius: var(--radius-medium);
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .question-item {
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            scroll-margin-top: 24px;
+            transition: background 0.3s ease;
+        }
+        .question-item:last-child { border-bottom: none; }
+        .question-item.unanswered-highlight {
+            background: rgba(255, 59, 48, 0.05);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            border-bottom: none;
+            box-shadow: 0 0 0 1.5px #ff3b30;
+        }
+        .question-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            line-height: 1.5;
+        }
+        .question-title .num { color: var(--accent-blue); margin-right: 6px; }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-pill {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background: #ffffff;
+            border: 1.5px solid rgba(0, 0, 0, 0.06);
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+        .option-pill input[type="radio"] { display: none; }
+        .option-pill:hover { border-color: rgba(0, 113, 227, 0.3); background: rgba(0, 113, 227, 0.02); }
+        .option-pill.selected {
+            border-color: var(--accent-blue);
+            background: rgba(0, 113, 227, 0.06);
+            color: var(--accent-blue);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.12);
+        }
+
+        /* Screen 3: Loading */
+        #loading-screen { display: none; text-align: center; padding: 60px 20px; }
+        .apple-spinner {
+            width: 52px; height: 52px;
+            border: 3.5px solid rgba(0, 113, 227, 0.15);
+            border-top: 3.5px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin: 0 auto 24px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .progress-track {
+            width: 100%; height: 6px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+        .progress-bar {
+            height: 100%; width: 0%;
+            background: var(--gradient-accent);
+            transition: width 0.25s ease;
+        }
+
+        /* Screen 4: Results */
+        #result-screen { display: none; }
+        
+        .result-card {
+            background: #ffffff;
+            border-radius: var(--radius-medium);
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .archetype-hero {
+            text-align: center;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(245, 245, 247, 0.6) 100%);
+            border-radius: var(--radius-medium);
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .hero-tag {
+            font-size: 12px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .hero-title {
+            font-size: 28px; font-weight: 800; color: var(--text-primary); margin: 0 0 12px 0; letter-spacing: -0.5px;
+        }
+        .hero-subtitle {
+            font-size: 15px; color: var(--text-secondary); margin: 0 0 20px 0; line-height: 1.6;
+        }
+        .match-badge-large {
+            display: inline-flex; align-items: baseline; gap: 4px;
+            background: var(--gradient-accent);
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2);
+        }
+        .match-badge-large span.num { font-size: 24px; font-weight: 800; }
+
+        .section-title {
+            font-size: 17px; font-weight: 700; color: var(--text-primary);
+            margin: 0 0 14px 0; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Radar Chart Wrapper */
+        .chart-container {
+            position: relative; width: 100%; max-width: 480px; margin: 0 auto;
+        }
+
+        /* Clinical Table */
+        .dim-table {
+            width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; margin-top: 10px;
+        }
+        .dim-table th {
+            padding: 10px; color: var(--text-secondary); border-bottom: 1.5px solid #f0f0f5; font-weight: 600;
+        }
+        .dim-table td {
+            padding: 12px 10px; border-bottom: 1px solid #f5f5f7; color: var(--text-primary);
+        }
+        .level-tag {
+            display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+        }
+        .level-very-high { background: #e8f5e9; color: #2e7d32; }
+        .level-high { background: #e3f2fd; color: #1565c0; }
+        .level-medium { background: #f5f5f5; color: #616161; }
+        .level-low { background: #fff3e0; color: #ef6c00; }
+        .level-very-low { background: #ffebee; color: #c62828; }
+
+        /* Apple Collapsible Details */
+        details.apple-details {
+            background: #ffffff;
+            border-radius: var(--radius-medium);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        details.apple-details summary {
+            padding: 16px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            outline: none;
+        }
+        details.apple-details summary::-webkit-details-marker { display: none; }
+        details.apple-details summary::after {
+            content: '＋'; font-size: 14px; color: var(--text-secondary); font-weight: 700; transition: transform 0.3s ease;
+        }
+        details.apple-details[open] summary::after {
+            content: '－'; transform: rotate(90deg);
+        }
+        details.apple-details .details-body {
+            padding: 0 20px 20px 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.7; border-top: 1px solid #f5f5f7;
+        }
+
+        .disclaimer-footer {
+            font-size: 12px; color: var(--text-tertiary); text-align: center; margin-top: 32px; line-height: 1.6;
+        }
+
+        /* PDF Export mode */
+        .pdf-export-mode { box-shadow: none !important; backdrop-filter: none !important; background: #ffffff !important; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="appContainer">
+    <div class="app-header">
+        <div class="app-badge">Science Traits Profile</div>
+        <h1>你是哪种科学探索者？</h1>
+        <div class="subtitle">基于认知与思考范式的科学特质图谱测评</div>
+    </div>
+
+    <!-- 1. 验证屏 -->
+    <div id="auth-screen">
+        <div class="disclaimer-card">
+            <strong>免责声明：</strong><br>
+            本问卷属于娱乐性自我探索工具，用于描述您偏好的思考与解决问题方式，不代表智力、科研能力或职业筛选。测评过程全程加密保护。
+        </div>
+        <div class="lock-icon">🔬</div>
+        <h3 style="margin:0 0 8px 0; font-size: 18px; color: var(--text-primary);">测试入口已锁定</h3>
+        <p style="margin: 0 0 24px 0; font-size: 14px; color: var(--text-secondary);">请输入专属测试码以开启科学探索图谱：</p>
+        <input type="text" id="authCode" class="auth-input" placeholder="输入测试码...">
+        <button id="authBtn" class="btn btn-primary" onclick="verifyToken()">验证并开启测试</button>
+    </div>
+
+    <!-- 2. 答题屏 -->
+    <div id="quiz-screen">
+        <div id="usageNoticeCard" class="notice-pill" style="display:none;">
+            <span id="usageNoticeText"></span>
+        </div>
+        <div class="quiz-guide">
+            <strong>💡 作答说明：</strong>科学并不只有一种思考方式。请根据您过去半年里的通常表现作答，而不是选择您认为“最正确”的答案。
+        </div>
+        <form id="quizForm">
+            <div id="questions-container"></div>
+            <button type="button" id="submitBtn" class="btn btn-primary" style="margin-top: 24px;" onclick="submitQuiz()">生成我的科学特质图谱</button>
+        </form>
+    </div>
+
+    <!-- 3. 加载屏 -->
+    <div id="loading-screen">
+        <div class="apple-spinner"></div>
+        <h3 style="margin:0; font-size: 18px; color: var(--text-primary);">深度拟合中...</h3>
+        <div id="loading-text" style="font-size: 14px; color: var(--text-secondary); margin-top: 12px;">正在读取答题数据...</div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- 4. 报告屏 -->
+    <div id="result-screen">
+        <!-- 屏1：核心原型结论卡片 -->
+        <div class="archetype-hero" id="archetypeHero">
+            <div class="hero-tag" id="heroTag">MAIN ARCHETYPE</div>
+            <div class="hero-title" id="heroTitle">加载中...</div>
+            <div class="hero-subtitle" id="heroSubtitle">加载中...</div>
+            <div class="match-badge-large" id="matchBadge">
+                风格匹配度 <span class="num" id="matchScore">--</span>%
+            </div>
+        </div>
+
+        <!-- 屏2：一句话核心评价 & 图谱形态 -->
+        <div class="result-card">
+            <div class="section-title">📌 核心探索风格评价</div>
+            <p id="oneSentenceSummary" style="font-size: 15px; color: var(--text-primary); line-height: 1.7; margin: 0 0 16px 0; font-weight: 500;"></p>
+            <div style="background: var(--surface-subtle); padding: 14px 18px; border-radius: var(--radius-small); font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                <strong style="color: var(--text-primary);">图谱形态：</strong><span id="profileTypeDesc"></span>
+            </div>
+        </div>
+
+        <!-- 屏3：八维雷达图与数据表 -->
+        <div class="result-card">
+            <div class="section-title">📈 八维科学特质图谱 (Radar Profile)</div>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+            <div style="margin-top: 24px;">
+                <table class="dim-table">
+                    <thead>
+                        <tr>
+                            <th>维度名称</th>
+                            <th>得分</th>
+                            <th>绝对等级</th>
+                            <th>相对偏差</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dimTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 屏4：双维度组合深度研判 -->
+        <div class="result-card" id="pairCombinationCard">
+            <div class="section-title">🧩 最高双维组合分析</div>
+            <h4 id="pairName" style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 17px;"></h4>
+            <p id="pairMode" style="font-size: 14px; color: var(--text-primary); line-height: 1.6; margin: 0 0 16px 0;"></p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: rgba(46, 125, 50, 0.05); border-left: 3px solid #2e7d32; padding: 12px 16px; border-radius: 8px;">
+                    <strong style="color: #2e7d32; font-size: 13px;">主要优势：</strong>
+                    <span id="pairAdvantage" style="font-size: 13px; color: var(--text-primary);"></span>
+                </div>
+                <div style="background: rgba(239, 108, 0, 0.05); border-left: 3px solid #ef6c00; padding: 12px 16px; border-radius: 8px;">
+                    <strong style="color: #ef6c00; font-size: 13px;">潜在风险：</strong>
+                    <span id="pairRisk" style="font-size: 13px; color: var(--text-primary);"></span>
+                </div>
+                <div style="background: rgba(0, 113, 227, 0.05); border-left: 3px solid var(--accent-blue); padding: 12px 16px; border-radius: 8px;">
+                    <strong style="color: var(--accent-blue); font-size: 13px;">成长建议：</strong>
+                    <span id="pairAdvice" style="font-size: 13px; color: var(--text-primary);"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 特殊高低组合提示 (若符合条件) -->
+        <div id="specialTipCard" class="result-card" style="display: none; border-left: 4px solid var(--accent-indigo);">
+            <div class="section-title" style="color: var(--accent-indigo);">💡 特殊特质差异提示</div>
+            <p id="specialTipText" style="font-size: 14px; color: var(--text-primary); line-height: 1.7; margin: 0;"></p>
+        </div>
+
+        <!-- 较少优先使用的探索方式 (中性表达) -->
+        <div class="result-card">
+            <div class="section-title">🔍 较少优先使用的探索方式</div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 12px 0;">（注：这并不代表缺陷或能力不足，仅代表在当前阶段您较少作为首选的方式）</p>
+            <div id="lowestDimContent"></div>
+        </div>
+
+        <!-- 科学家原型详细讲解 -->
+        <div class="result-card">
+            <div class="section-title">🏛️ 科学家原型对照说明</div>
+            <p id="scientistDescText" style="font-size: 14px; color: var(--text-primary); line-height: 1.7; margin: 0 0 16px 0;"></p>
+            <div id="secondaryScientistBox" style="display: none; background: var(--surface-subtle); padding: 14px 18px; border-radius: var(--radius-small); font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            </div>
+        </div>
+
+        <!-- 屏5：展开查看所有八维解说 (Collapsible) -->
+        <details class="apple-apple-details apple-details">
+            <summary>📖 展开查看全部八个维度详解</summary>
+            <div class="details-body" id="allDimensionsBody">
+            </div>
+        </details>
+
+        <!-- 作答质量提示卡片 (若触发) -->
+        <div id="qualityNoticeBox" class="result-card" style="display: none; background: #fff8e1; border-color: #ffe082;">
+            <div class="section-title" style="color: #b78103;">⚠️ 作答质量提示</div>
+            <p id="qualityNoticeText" style="font-size: 13px; color: #795548; margin: 0; line-height: 1.6;"></p>
+        </div>
+
+        <button id="downloadPdfBtn" class="btn btn-primary" style="margin-top: 24px;" onclick="generatePDF()">📄 保存高清测评长图 (PDF)</button>
+
+        <div class="disclaimer-footer">
+            本测试是一项娱乐性自我探索工具，用于描述您偏好的思考、探索和合作方式。<br>
+            测试结果不代表智力、科学知识、科研能力或职业适合度。科学家匹配属于游戏化风格参照。
+        </div>
+    </div>
+</div>
+
+<script>
+    let rawQuestions = [];
+    let startTime = 0;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const authInput = document.getElementById('authCode');
+        if (authInput) {
+            authInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); verifyToken(); }
+            });
+        }
+    });
+
+    async function verifyToken() {
+        const inputCode = document.getElementById('authCode').value.trim().toUpperCase();
+        if (!inputCode) { alert("请输入测试码！"); return; }
+
+        const btn = document.getElementById('authBtn');
+        btn.innerText = "正在验证...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: inputCode })
+            });
+            const result = await response.json();
+            if (result.success) {
+                rawQuestions = result.questions;
+                
+                const noticeCard = document.getElementById('usageNoticeCard');
+                const noticeText = document.getElementById('usageNoticeText');
+                if (noticeCard && noticeText && result.message) {
+                    noticeText.innerHTML = `💡 <strong>提示：</strong>${result.message}`;
+                    noticeCard.style.display = 'block';
+                }
+
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('quiz-screen').style.display = 'block';
+                renderQuestions();
+                startTime = Date.now();
+            } else {
+                alert(result.message);
+                btn.innerText = "验证并开启测试";
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error("验证失败:", error);
+            alert("❌ 验证码校验失败：网络请求超时或服务未响应。");
+            btn.innerText = "验证并开启测试";
+            btn.disabled = false;
+        }
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        
+        rawQuestions.forEach((item, index) => {
+            let html = `<div class="question-item" id="q-item-${index}">
+                <div class="question-title"><span class="num">${index + 1}.</span> ${item.q}</div>
+                <div class="options-group">`;
+            item.options.forEach((opt) => {
+                html += `<label class="option-pill" onclick="handleOptionSelect(this, ${index})">
+                    <input type="radio" name="q_${item.id}" value="${opt.score}">
+                    <span>${opt.text}</span>
+                </label>`;
+            });
+            html += `</div></div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function handleOptionSelect(labelEl, index) {
+        const siblings = labelEl.parentElement.querySelectorAll('.option-pill');
+        siblings.forEach(el => el.classList.remove('selected'));
+        labelEl.classList.add('selected');
+        
+        const qItem = document.getElementById(`q-item-${index}`);
+        if (qItem) qItem.classList.remove('unanswered-highlight');
+
+        setTimeout(() => {
+            const nextItem = document.getElementById(`q-item-${index + 1}`);
+            if (nextItem) {
+                nextItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 180);
+    }
+
+    let g_userResponses = [];
+    let g_dimScores = {}; // Percentage scores 0-100 for CQ, EV, AN, EX, SY, PR, IM, CO
+
+    const dimNames = {
+        CQ: '好奇与问题意识',
+        EV: '证据与开放修正',
+        AN: '分析与模型建构',
+        EX: '实验与行动验证',
+        SY: '系统与关联思考',
+        PR: '精确与持续钻研',
+        IM: '想象与概念创新',
+        CO: '协作与知识表达'
+    };
+
+    const scientistProfiles = [
+        { shortName: '爱因斯坦', traitRole: '思想实验者', name: '爱因斯坦式思想实验者', desc: '习惯先在头脑中重新构造问题。比起立刻动手，更擅长从假设、图像、类比和概念关系中寻找突破口。', advice: '把最有趣的想法转化成一个可以被观察、比较或否定的小测试。', vector: { CQ:92, EV:74, AN:96, EX:48, SY:88, PR:66, IM:100, CO:68 } },
+        { shortName: '居里', traitRole: '精密验证者', name: '居里式精密验证者', desc: '相信可靠结论来自耐心、精确和反复验证。不容易被漂亮但模糊的解释打动，更愿意检查过程、记录条件。', advice: '允许自己在证据尚不完整时提出暂时性假设，并主动邀请别人帮助改进。', vector: { CQ:72, EV:95, AN:80, EX:96, SY:66, PR:100, IM:58, CO:55 } },
+        { shortName: '达尔文', traitRole: '长期观察者', name: '达尔文式长期观察者', desc: '擅长从大量细节和长期变化中发现模式。不急于给出答案，而是愿意持续收集现象、比较差异。', advice: '为信息收集设置阶段性截止点，定期形成可以继续检验的暂时结论。', vector: { CQ:100, EV:92, AN:68, EX:62, SY:100, PR:96, IM:80, CO:74 } },
+        { shortName: '图灵', traitRole: '抽象建模者', name: '图灵式抽象建模者', desc: '喜欢把复杂问题转化成清晰的规则、结构或可计算模型。面对混乱信息时能找到其中最基本的元素。', advice: '在模型之外加入真实使用者、环境限制和异常情况，检查模型是否仍然有效。', vector: { CQ:76, EV:90, AN:100, EX:64, SY:92, PR:84, IM:96, CO:50 } },
+        { shortName: '费曼', traitRole: '直觉实验者', name: '费曼式直觉实验者', desc: '喜欢一边理解、一边试验、一边向别人解释。当概念过于复杂时，会尝试把它还原成简单直观的问题。', advice: '保留探索过程中的关键数据和失败记录，让灵感更容易被复查和复现。', vector: { CQ:100, EV:84, AN:90, EX:98, SY:74, PR:78, IM:94, CO:100 } },
+        { shortName: '屠呦呦', traitRole: '实践探索者', name: '屠呦呦式实践探索者', desc: '关注的不只是理论是否优美，更关心它能否在现实中产生有效结果。能在大量线索中筛选可行方向。', advice: '在记录“什么有效”的同时，也总结“为什么可能有效”，让实践经验形成可迁移的模型。', vector: { CQ:84, EV:98, AN:78, EX:100, SY:94, PR:94, IM:70, CO:68 } },
+        { shortName: '古道尔', traitRole: '共情观察者', name: '古道尔式共情观察者', desc: '擅长在耐心观察中理解复杂对象。不仅关注数据，也重视行为发生的具体情境与交流。', advice: '在深入体验之外，预先确定记录标准，区分直接观察、个人解释和情感反应。', vector: { CQ:98, EV:86, AN:60, EX:90, SY:98, PR:84, IM:78, CO:96 } },
+        { shortName: '凯瑟琳·约翰逊', traitRole: '精确计算者', name: '凯瑟琳·约翰逊式精确计算者', desc: '擅长把复杂目标转化为可以逐步检查的计算与流程。关注准确性，也能把自己的工作嵌入更大的协作系统。', advice: '明确哪些环节需要最高精度，哪些环节可以通过工具、流程或团队分担。', vector: { CQ:70, EV:98, AN:100, EX:76, SY:92, PR:98, IM:66, CO:90 } },
+        { shortName: '吴健雄', traitRole: '严密实验者', name: '吴健雄式严密实验者', desc: '重视能够经受严格检验的结果。面对重要判断时会特别关注实验条件、测量误差和替代解释。', advice: '在验证成熟假设之外，定期保留时间提出更大胆、暂时不够完整的新问题。', vector: { CQ:68, EV:100, AN:98, EX:88, SY:72, PR:100, IM:60, CO:58 } },
+        { shortName: '艾达·洛芙莱斯', traitRole: '概念创造者', name: '艾达·洛芙莱斯式概念创造者', desc: '容易看到一种工具或理论尚未实现的可能性。不仅关注事物现在能做什么，也会想象它未来可能变成什么。', advice: '为宏大的构想设计一个最小可验证版本，尽快发现其中最关键的现实限制。', vector: { CQ:90, EV:70, AN:95, EX:52, SY:88, PR:70, IM:100, CO:90 } }
+    ];
+
+    const pairTemplates = {
+        'CQ+EV': { name: '证据追问型探索者', mode: '你既喜欢提出问题，也不满足于未经检验的答案。你的探索通常从“为什么”开始，再通过证据判断哪些解释更可靠。', adv: '你不容易因为一个说法听起来合理就停止思考，也愿意在新证据出现时修改原有判断。', risk: '你可能不断提出新问题、要求更多证据，因而延迟形成暂时结论。', advice: '为每轮探索设定一个阶段性判断点：先根据现有证据形成暂时结论，再明确下一步最值得验证的问题。' },
+        'CQ+AN': { name: '问题拆解型探索者', mode: '你不仅会发现问题，还会尝试把问题拆解成可以分析的结构。你的思考往往从模糊疑问开始，逐步变成变量、规则和逻辑关系。', adv: '你擅长把“我不明白”转化为“具体哪里不明白”。', risk: '你可能在拆解过程中不断产生新分支，使问题结构越来越复杂。', advice: '先确定一个最核心的问题，再把其他问题放入待研究清单。' },
+        'CQ+EX': { name: '好奇行动型探索者', mode: '你面对未知时，不仅会追问，还愿意迅速尝试。你通常通过操作、观察和调整，把好奇转化为实际反馈。', adv: '你能够很快发现一个想法在现实中是否可行。', risk: '你可能因为太想看到结果，而没有提前明确测试条件。', advice: '每次尝试前只写三项：要验证什么、改变什么、观察什么。' },
+        'CQ+SY': { name: '广角问题型探索者', mode: '你的好奇心通常不会停留在单一现象上，而会继续追问它与环境、时间和与其他因素之间的联系。', adv: '你容易发现被局部视角忽略的复杂问题。', risk: '问题范围可能不断扩大，最后难以确定从哪里开始。', advice: '保留整体地图，但每次只选择其中一条关键关系深入研究。' },
+        'CQ+PR': { name: '长期追问型探索者', mode: '你不仅容易产生问题，也愿意长期追踪问题。即使答案没有迅速出现，你仍可能持续观察、记录和修正。', adv: '你能够处理需要长期积累才能看出规律的问题。', risk: '你可能对尚未解决的问题投入过多时间，难以决定何时暂停。', advice: '设置阶段性复盘点，判断继续投入、改变方向或暂时停止。' },
+        'CQ+IM': { name: '想象驱动型探索者', mode: '你的问题往往会迅速通向新的可能性。你喜欢追问“为什么”，也喜欢设想“如果条件改变会怎样”。', adv: '你容易提出新颖问题和非传统解释。', risk: '问题和构想可能增长得比验证速度更快。', advice: '从最有意思的想法中选一个，设计最小可检验版本。' },
+        'CQ+CO': { name: '对话提问型探索者', mode: '你喜欢通过提问和交流推动理解。与其独自等待完整答案，你更可能在讨论中发现问题的真正边界。', adv: '你能够让团队注意到被忽略的假设，也擅长用问题帮助别人澄清思路。', risk: '连续提问可能被他人误解为质疑或否定。', advice: '在提问前说明目的，例如：“我想确认我们的假设是否一致。”' },
+
+        'EV+AN': { name: '逻辑证据型探索者', mode: '你倾向于把论证拆解成前提、证据和结论，再检查这些部分是否真正连接。', adv: '你不容易被表面完整但逻辑薄弱的解释说服。', risk: '你可能对结构不严密但具有启发性的早期想法过于苛刻。', advice: '区分“正在形成的假设”和“准备接受检验的正式结论”。' },
+        'EV+EX': { name: '实证检验型探索者', mode: '你相信观点最终需要面对实际结果。你既重视证据，也愿意通过测试主动获得证据。', adv: '你能够把争论转化为可以被观察和比较的问题。', risk: '你可能过度重视能够立即测量的内容，而忽略暂时难以量化的因素。', advice: '测试前明确哪些关键现象目前无法被直接测量，并保留相应限制说明。' },
+        'EV+SY': { name: '系统证据型探索者', mode: '你会检查证据，同时关注证据来自什么系统、受到哪些条件影响，以及结论能否推广到其他环境。', adv: '你较少把孤立结果误认为普遍规律。', risk: '你可能不断增加条件，使结论显得永远不够确定。', advice: '明确结论的适用边界，而不是要求它在所有情况下都成立。' },
+        'EV+PR': { name: '严谨验证型探索者', mode: '你重视可靠证据，也愿意通过记录、复核和重复验证提高结论可信度。', adv: '你的判断通常建立在较稳固的过程之上。', risk: '你可能因为担心错误，而迟迟不愿公开尚未完全确定的结果。', advice: '使用“当前证据支持”“暂时判断”等语言，允许结论以不同置信程度存在。' },
+        'EV+IM': { name: '假设检验型探索者', mode: '你能够提出多种可能解释，同时愿意让证据筛选这些解释。你的想象力是为了扩大可检验假设的范围。', adv: '你兼具创意与自我纠错能力。', risk: '你可能同时维护过多假设，增加判断负担。', advice: '提前规定每个假设需要观察到什么结果才算得到支持。' },
+        'EV+CO': { name: '开放讨论型探索者', mode: '你愿意让观点接受证据和他人批评。你通常把讨论视为修正判断的工具，而不是证明自己正确的竞赛。', adv: '你有利于建立能够纠错的团队环境。', risk: '你可能过于重视有说服力的表达者，或者把群体共识误当成证据。', advice: '讨论结束后单独记录：哪些判断来自证据，哪些来自团队偏好。' },
+
+        'AN+EX': { name: '工程试验型探索者', mode: '你喜欢先建立问题结构，再通过实际测试检查模型。你通常既关注“应该怎样运作”，也关注“现实中究竟怎样运作”。', adv: '你能够在模型与反馈之间快速迭代。', risk: '你可能太快优化局部指标，而没有重新检查问题本身是否定义正确。', advice: '每轮测试后不仅问“方案是否改善”，也问“我们是否在解决正确的问题”。' },
+        'AN+SY': { name: '系统建模型探索者', mode: '你擅长把复杂系统转化为变量、层级和反馈关系。你通常能够同时看到局部机制和整体结构。', adv: '你适合处理多因素、长期和相互影响的问题。', risk: '模型可能变得过于复杂，以至于难以验证或解释。', advice: '先建立最小模型，只在必要时增加变量。' },
+        'AN+PR': { name: '精密分析型探索者', mode: '你重视结构清晰，也愿意反复检查计算、步骤和边界条件。', adv: '你能够发现隐藏在细节中的逻辑问题。', risk: '你可能在局部精度上投入过多，而忽略整体决策是否已经足够明确。', advice: '提前划分“决定结论的关键细节”和“不会改变结论的次要细节”。' },
+        'AN+IM': { name: '概念建模型探索者', mode: '你擅长把想象转化为结构，把抽象想法组织成规则、模型或可以进一步讨论的概念。', adv: '你不仅会产生新想法，还能让新想法具有内部逻辑。', risk: '模型可能在概念上非常漂亮，却缺少现实检验。', advice: '为每个模型寻找一个最容易失败的现实场景。' },
+        'AN+CO': { name: '结构表达型探索者', mode: '你擅长组织复杂信息，并将其转换成别人能够理解的框架、步骤或解释。', adv: '你能够在团队中承担澄清概念和整理思路的作用。', risk: '为了让表达清晰，你可能过度简化仍有争议或不确定的部分。', advice: '清楚标记哪些内容是已确认结构，哪些只是便于理解的简化模型。' },
+
+        'EX+SY': { name: '系统干预型探索者', mode: '你愿意行动，同时会关注行动在整个系统中造成的连锁反应。', adv: '你不仅考虑方案能否产生效果，也会考虑副作用和长期结果。', risk: '为了观察系统变化，你可能一次介入太多环节，难以识别因果关系。', advice: '尽量分阶段实施，每个阶段保留对照和观察窗口。' },
+        'EX+PR': { name: '持续试验型探索者', mode: '你愿意反复尝试，并且能耐心记录不同条件下的结果。失败对你而言通常不是终点，而是下一轮调整的信息。', adv: '你有能力通过长期迭代积累可靠经验。', risk: '你可能因为已经投入大量努力，而不愿停止效果有限的方向。', advice: '提前设置终止标准和转向条件。' },
+        'EX+IM': { name: '创新原型型探索者', mode: '你不仅能提出新想法，也愿意迅速把想法做成可观察、可操作的版本。', adv: '你能够缩短创意与现实反馈之间的距离。', risk: '快速原型可能让你在想法尚未定义清楚时过早判断其价值。', advice: '把第一次尝试视为学习工具，而不是最终成败判决。' },
+        'EX+CO': { name: '协作实践型探索者', mode: '你喜欢在共同实践中推进理解。你倾向于通过分工、反馈和现场调整解决问题。', adv: '你能够让团队从讨论迅速进入行动。', risk: '团队行动节奏较快时，关键假设可能没有被完整记录。', advice: '每次行动前确保团队对目标、变量和成功标准有共同理解。' },
+
+        'SY+PR': { name: '长期系统型探索者', mode: '你关注长期变化，也愿意耐心记录复杂系统中的细节。你适合处理需要长期观察才能显现规律的问题。', adv: '你能够发现短期分析容易忽略的缓慢趋势。', risk: '长期投入可能让你难以及时退出不再重要的问题。', advice: '定期重新判断研究问题是否仍值得投入，而不只检查数据是否完整。' },
+        'SY+IM': { name: '宏观构想型探索者', mode: '你容易把不同领域、层级和时间尺度联系起来，并设想系统可能出现的新形态。', adv: '你擅长发现跨领域机会和远期可能性。', risk: '构想范围可能过于宏大，难以转化为具体行动。', advice: '从整个系统中选择一个最关键的连接点进行验证。' },
+        'SY+CO': { name: '协作系统型探索者', mode: '你不仅关注问题本身，也关注不同参与者、关系和环境如何共同影响结果。', adv: '你适合协调多方观点，并发现局部决策对整体合作的影响。', risk: '为了兼顾所有人，你可能延迟必要决策。', advice: '区分必须达成共识的事项和可以由明确负责人决定的事项。' },
+
+        'PR+IM': { name: '精雕创新型探索者', mode: '你既能产生富有想象力的构想，也愿意长期打磨细节，让构想逐渐变得可靠。', adv: '你能够把灵感发展成完成度较高的成果。', risk: '你可能对创意成品要求过高，导致发布和验证过晚。', advice: '先发布可检验版本，再逐步提高完成度。' },
+        'PR+CO': { name: '可靠协作型探索者', mode: '你重视过程可靠，也重视信息能否被团队理解和复查。你通常愿意把个人工作转化为可共享、可接续的成果。', adv: '你能够提高团队工作的稳定性和可复现性。', risk: '你可能承担过多整理、检查和支持工作。', advice: '明确责任边界，让可靠性成为团队流程，而不是个人负担。' },
+
+        'IM+CO': { name: '创意传播型探索者', mode: '你擅长提出新概念，也愿意通过故事、类比和交流让别人理解这些概念。', adv: '你能够让尚未成熟的新想法获得讨论和发展机会。', risk: '有感染力的表达可能让想法听起来比现有证据更成熟。', advice: '在表达中明确区分愿景、假设、已有证据和仍待验证的部分。' }
+    };
+
+    const specialTips = [
+        { key: 'IM-EV', match: (d) => d.IM >= 75 && d.EV <= 45 && (d.IM - d.EV) >= 25, delta: (d) => d.IM - d.EV, text: '你的想象力明显强于证据检查倾向。你可能很容易产生有吸引力的解释，但需要特别区分“有趣”“合理”和“已经得到支持”。' },
+        { key: 'EV-IM', match: (d) => d.EV >= 75 && d.IM <= 45 && (d.EV - d.IM) >= 25, delta: (d) => d.EV - d.IM, text: '你对证据标准要求较高，但可能较少主动提出大胆假设。可以允许早期想法暂时不够严密，再让后续证据负责筛选。' },
+        { key: 'AN-EX', match: (d) => d.AN >= 75 && d.EX <= 45 && (d.AN - d.EX) >= 25, delta: (d) => d.AN - d.EX, text: '你可能擅长建立完整模型，却容易等待计划成熟后再行动。面对低风险问题时，小规模测试能够帮助你更快发现模型遗漏。' },
+        { key: 'EX-AN', match: (d) => d.EX >= 75 && d.AN <= 45 && (d.EX - d.AN) >= 25, delta: (d) => d.EX - d.AN, text: '你的行动速度可能快于结构分析。尝试前明确变量、对照和观察目标，可以避免得到很多结果却不知道原因。' },
+        { key: 'CQ-PR', match: (d) => d.CQ >= 75 && d.PR <= 45 && (d.CQ - d.PR) >= 25, delta: (d) => d.CQ - d.PR, text: '你可能很容易开始探索新问题，却不总是愿意长期记录和推进同一个问题。建立问题清单和阶段性回顾，可以减少兴趣快速转移造成的中断。' },
+        { key: 'PR-CQ', match: (d) => d.PR >= 75 && d.CQ <= 45 && (d.PR - d.CQ) >= 25, delta: (d) => d.PR - d.CQ, text: '你可能很擅长认真完成已经确定的任务，但较少主动重新定义问题。开始投入前，可以先检查一次：这个问题本身是否值得被这样解决？' },
+        { key: 'SY-EX', match: (d) => d.SY >= 75 && d.EX <= 45 && (d.SY - d.EX) >= 25, delta: (d) => d.SY - d.EX, text: '你能够看到广泛联系，但可能因为系统过于复杂而迟迟不行动。可以选择一个影响较大、又容易观察的节点作为切入点。' },
+        { key: 'EX-SY', match: (d) => d.EX >= 75 && d.SY <= 45 && (d.EX - d.SY) >= 25, delta: (d) => d.EX - d.SY, text: '你倾向于迅速解决眼前问题，但需要注意局部改善是否会在其他环节造成新问题。' },
+        { key: 'CO-AN', match: (d) => d.CO >= 75 && d.AN <= 45 && (d.CO - d.AN) >= 25, delta: (d) => d.CO - d.AN, text: '你可能擅长推动讨论和形成共识，但需要确保团队使用的概念、假设和判断标准足够清晰。' },
+        { key: 'AN-CO', match: (d) => d.AN >= 75 && d.CO <= 45 && (d.AN - d.CO) >= 25, delta: (d) => d.AN - d.CO, text: '你的模型可能非常清楚，但别人未必能够直接读取你的思考过程。尽早解释关键假设，有助于减少沟通中的误解。' }
+    ];
+
+    const lowestDimTexts = {
+        CQ: '你通常不会仅仅为一个问题尚未解决就持续追问，更可能先判断它是否具有现实意义。这能帮助你避免无目的的信息消耗。不过，当任务需要创新或重新定义问题时，可以有意识地多保留一个尚未被回答的问题。',
+        EV: '你在形成判断时，可能较多依赖经验、直觉、熟悉程度或他人意见，而不会总是主动寻找反例。在高风险问题中，可以增加一个固定步骤：寻找一项最可能推翻现有判断的信息。',
+        AN: '你通常不喜欢把问题过度拆分，更可能依靠整体理解或直接经验。面对变量较多的任务时，可以先列出三个最关键因素，不需要一开始就建立完整模型。',
+        EX: '你通常希望在行动前获得更完整的计划和确定性。在可逆、低成本的问题上，可以尝试把第一次行动定义为“收集信息”，而不是要求它直接成功。',
+        SY: '你更擅长聚焦眼前和局部问题，不一定自然地追踪长期或跨环节影响。在重要方案实施前，可以额外询问：它会对谁、对哪个环节、在更长时间后产生什么影响？',
+        PR: '你可能更重视推进速度、新鲜感和整体结果，不愿意长时间停留在重复检查上。在高精度任务中，可以借助清单、自动化工具或他人复核，而不必完全依靠个人耐心。',
+        IM: '你更信任已经可行的方法和明确现实条件，不一定主动追求概念创新。当现有方法长期没有改善时，可以尝试提出一个不受当前限制的假想方案，再从中寻找可落地部分。',
+        CO: '你可能更习惯独立形成完整想法，再向别人展示结果。为了减少后期返工，可以在想法完成约三分之一时，提前向一位可信任的人说明核心假设。'
+    };
+
+    function submitQuiz() {
+        let firstUnanswered = -1;
+        g_userResponses = [];
+
+        for (let i = 0; i < rawQuestions.length; i++) {
+            let item = rawQuestions[i];
+            const radios = document.getElementsByName('q_' + item.id);
+            let val = 0;
+            for (let r of radios) {
+                if (r.checked) { val = parseInt(r.value); break; }
+            }
+            if (val === 0 && firstUnanswered === -1) {
+                firstUnanswered = i;
+            }
+            g_userResponses.push({ id: item.id, dim: item.dim, isReverse: item.isReverse, rawVal: val });
+        }
+
+        if (firstUnanswered !== -1) {
+            const el = document.getElementById(`q-item-${firstUnanswered}`);
+            el.classList.add('unanswered-highlight');
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => alert(`还有题目未作答，已为您定位到第 ${firstUnanswered + 1} 题。`), 300);
+            return;
+        }
+
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+        simulateLoading();
+    }
+
+    function simulateLoading() {
+        const fill = document.getElementById('progress-bar');
+        const text = document.getElementById('loading-text');
+        const stages = ["计算八维维度原始分...", "转换为标准百分制分数...", "评估图谱离散度与极差...", "进行皮尔逊相关性原型匹配...", "生成全套科学特质研判报告..."];
+        let progress = 0, stageIndex = 0;
+        
+        let interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 8) + 3;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(calculateAndShowResults, 400);
+            }
+            fill.style.width = progress + '%';
+            let expectedStage = Math.floor((progress / 100) * stages.length);
+            if (expectedStage >= stages.length) expectedStage = stages.length - 1;
+            if (expectedStage > stageIndex) {
+                stageIndex = expectedStage;
+                text.innerText = stages[stageIndex];
+            }
+        }, 80);
+    }
+
+    function calculateAndShowResults() {
+        // 1. Calculate raw and percentage scores per dimension
+        const dimSums = { CQ:0, EV:0, AN:0, EX:0, SY:0, PR:0, IM:0, CO:0 };
+        g_userResponses.forEach(resp => {
+            let actualScore = resp.isReverse ? (6 - resp.rawVal) : resp.rawVal;
+            dimSums[resp.dim] += actualScore;
+        });
+
+        const dimsKeys = ['CQ', 'EV', 'AN', 'EX', 'SY', 'PR', 'IM', 'CO'];
+        g_dimScores = {};
+        dimsKeys.forEach(k => {
+            let meanRaw = dimSums[k] / 5.0; // Range 1-5
+            let pct = ((meanRaw - 1.0) / 4.0) * 100.0; // Range 0-100
+            g_dimScores[k] = Math.max(0, Math.min(100, pct));
+        });
+
+        // 2. Derived statistics
+        let sumPct = 0;
+        dimsKeys.forEach(k => sumPct += g_dimScores[k]);
+        let meanScore = sumPct / 8.0;
+
+        let variance = 0;
+        dimsKeys.forEach(k => { variance += Math.pow(g_dimScores[k] - meanScore, 2); });
+        let profileSd = Math.sqrt(variance / 8.0);
+
+        // Sort dimensions descending (tie breaker: fixed order CQ > EV > AN > EX > SY > PR > IM > CO)
+        let sortedDims = dimsKeys.map(k => ({ code: k, score: g_dimScores[k], delta: g_dimScores[k] - meanScore }))
+            .sort((a, b) => {
+                if (Math.abs(b.score - a.score) > 0.001) return b.score - a.score;
+                return dimsKeys.indexOf(a.code) - dimsKeys.indexOf(b.code);
+            });
+
+        let top1 = sortedDims[0];
+        let top2 = sortedDims[1];
+        let bottom1 = sortedDims[7];
+        let bottom2 = sortedDims[6];
+
+        // 3. Profile Type Classification
+        let profileType = '';
+        let profileTypeDesc = '';
+        if (profileSd < 6) {
+            profileType = 'BALANCED';
+            profileTypeDesc = '均衡型图谱 (标准差 < 6)。八项特质差距较小，适应性较强，能根据问题性质在多种思考方式间灵活切换。';
+        } else if (profileSd < 10) {
+            profileType = 'MILDLY_DIFFERENTIATED';
+            profileTypeDesc = '轻度分化型图谱 (6 ≤ 标准差 < 10)。探索方式灵活，同时已显现出较为清晰的个人偏好。';
+        } else if (profileSd < 15) {
+            profileType = 'CLEARLY_DIFFERENTIATED';
+            profileTypeDesc = '清晰分化型图谱 (10 ≤ 标准差 < 15)。已形成明确的科学探索风格，面对问题时会优先调用熟知的工具箱。';
+        } else {
+            profileType = 'POLARIZED';
+            profileTypeDesc = '高度尖锐型图谱 (标准差 ≥ 15)。不同维度差异非常鲜明，具有突出的个人优势与特色。';
+        }
+
+        // 4. Scientist Matching Algorithm (Pearson Correlation + Level Similarity)
+        let matches = scientistProfiles.map(sc => {
+            let uVector = dimsKeys.map(k => g_dimScores[k]);
+            let pVector = dimsKeys.map(k => sc.vector[k]);
+
+            let uMean = uVector.reduce((a,b)=>a+b,0)/8.0;
+            let pMean = pVector.reduce((a,b)=>a+b,0)/8.0;
+
+            let num = 0, denU = 0, denP = 0;
+            let absDiffSum = 0;
+
+            for(let i=0; i<8; i++) {
+                let uDiff = uVector[i] - uMean;
+                let pDiff = pVector[i] - pMean;
+                num += uDiff * pDiff;
+                denU += uDiff * uDiff;
+                denP += pDiff * pDiff;
+                absDiffSum += Math.abs(uVector[i] - pVector[i]);
+            }
+
+            let r = (denU > 0 && denP > 0) ? (num / (Math.sqrt(denU) * Math.sqrt(denP))) : 0;
+            let shapeSim = (r + 1.0) / 2.0;
+            let meanAbsDiff = absDiffSum / 8.0;
+            let levelSim = Math.max(0, 1.0 - (meanAbsDiff / 100.0));
+
+            let finalScore = 0;
+            if (profileSd < 6) {
+                finalScore = Math.round(100 * levelSim);
+            } else {
+                finalScore = Math.round(100 * (0.8 * shapeSim + 0.2 * levelSim));
+            }
+
+            return { profile: sc, score: Math.min(99, Math.max(50, finalScore)) };
+        }).sort((a,b) => b.score - a.score);
+
+        let match1 = matches[0];
+        let match2 = matches[1];
+
+        // 5. Render Hero & Core Title
+        const heroTitle = document.getElementById('heroTitle');
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        const heroTag = document.getElementById('heroTag');
+        const matchScore = document.getElementById('matchScore');
+
+        let pairKey = `${top1.code}+${top2.code}`;
+        if (!pairTemplates[pairKey]) pairKey = `${top2.code}+${top1.code}`;
+        let pairInfo = pairTemplates[pairKey];
+        let styleName = pairInfo ? pairInfo.name : `${dimNames[top1.code]} × ${dimNames[top2.code]}探索者`;
+
+        heroTag.innerText = "YOUR SCIENTIST MATCH";
+        heroTitle.innerHTML = `<span style="font-size: 15px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">最接近的科学家：</span><span style="font-size: 36px; font-weight: 800; color: var(--accent-blue); letter-spacing: -0.5px; line-height: 1.2;">${match1.profile.shortName}</span>`;
+        heroSubtitle.innerHTML = `型态：<strong>${match1.profile.traitRole}</strong> · 探索风格：<strong>${styleName}</strong>`;
+        matchScore.innerText = match1.score;
+
+        // 6. One-sentence summary & Profile type
+        document.getElementById('profileTypeDesc').innerText = profileTypeDesc;
+        
+        const oneSummary = document.getElementById('oneSentenceSummary');
+        if (pairInfo) {
+            oneSummary.innerHTML = `根据最高双维 (<strong>${dimNames[top1.code]}</strong> 与 <strong>${dimNames[top2.code]}</strong>) 的组合特征：<br>“${pairInfo.mode}”`;
+        } else {
+            oneSummary.innerText = `你表现出突出的 ${dimNames[top1.code]} 与 ${dimNames[top2.code]} 倾向。`;
+        }
+
+        // 7. Render Pair Combination Section
+        if (pairInfo) {
+            document.getElementById('pairName').innerText = `${pairInfo.name} (${top1.code} + ${top2.code})`;
+            document.getElementById('pairMode').innerText = pairInfo.mode;
+            document.getElementById('pairAdvantage').innerText = pairInfo.adv;
+            document.getElementById('pairRisk').innerText = pairInfo.risk;
+            document.getElementById('pairAdvice').innerText = pairInfo.advice;
+        }
+
+        // 8. Special High/Low Contrast Tip
+        let validTips = specialTips.filter(st => st.match(g_dimScores));
+        if (validTips.length > 0) {
+            validTips.sort((a, b) => b.delta(g_dimScores) - a.delta(g_dimScores));
+            let selectedTip = validTips[0];
+            document.getElementById('specialTipText').innerText = selectedTip.text;
+            document.getElementById('specialTipCard').style.display = 'block';
+        } else {
+            document.getElementById('specialTipCard').style.display = 'none';
+        }
+
+        // 9. Less-preferred Dimension Section (R7)
+        let lowestHtml = `
+            <div style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-small); border-left: 3px solid var(--text-secondary);">
+                <strong style="color: var(--text-primary); font-size: 14px;">${dimNames[bottom1.code]} (${bottom1.code}) - 得分: ${Math.round(bottom1.score)}分</strong>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 8px 0 0 0; line-height: 1.6;">${lowestDimTexts[bottom1.code]}</p>
+            </div>
+        `;
+        if ((bottom2.score - bottom1.score) < 3.0) {
+            lowestHtml += `
+                <div style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-small); border-left: 3px solid var(--text-secondary); margin-top: 12px;">
+                    <strong style="color: var(--text-primary); font-size: 14px;">${dimNames[bottom2.code]} (${bottom2.code}) - 得分: ${Math.round(bottom2.score)}分</strong>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 8px 0 0 0; line-height: 1.6;">${lowestDimTexts[bottom2.code]}</p>
+                </div>
+            `;
+        }
+        document.getElementById('lowestDimContent').innerHTML = lowestHtml;
+
+        // 10. Scientist Prototype Explanation
+        let scDescText = `在 10 位预设科学家探索风格档案中，您的图谱与 <strong>${match1.profile.name}</strong> 的分布最为接近 (${match1.score}% 风格匹配度)。<br><br>${match1.profile.desc}<br><br>💡 <strong>成长建议：</strong>${match1.profile.advice}`;
+        document.getElementById('scientistDescText').innerHTML = scDescText;
+
+        if ((match1.score - match2.score) < 2) {
+            const secBox = document.getElementById('secondaryScientistBox');
+            secBox.innerHTML = `👥 <strong>双重原型提示：</strong> 您站在两种科学风格的交界处，同时也高度接近 <strong>${match2.profile.name}</strong> (${match2.score}% 匹配度)。这代表您的探索方式不是单一模板，而是结合了两种不同的优势。`;
+            secBox.style.display = 'block';
+        }
+
+        // 11. Render Clinical Table & All Dimensions Accordion
+        let tableHtml = '';
+        let accordionHtml = '';
+        dimsKeys.forEach(k => {
+            let score = Math.round(g_dimScores[k]);
+            let delta = (g_dimScores[k] - meanScore).toFixed(1);
+            let deltaStr = delta >= 0 ? `+${delta}` : `${delta}`;
+            
+            let tagClass = 'level-medium';
+            let tagLabel = '中等倾向';
+            if (score >= 80) { tagClass = 'level-very-high'; tagLabel = '非常鲜明'; }
+            else if (score >= 65) { tagClass = 'level-high'; tagLabel = '较为鲜明'; }
+            else if (score >= 50) { tagClass = 'level-medium'; tagLabel = '中等倾向'; }
+            else if (score >= 35) { tagClass = 'level-low'; tagLabel = '较少优先'; }
+            else { tagClass = 'level-very-low'; tagLabel = '很少优先'; }
+
+            tableHtml += `
+                <tr>
+                    <td style="font-weight:600;">${dimNames[k]} (${k})</td>
+                    <td style="font-weight:700; color:var(--accent-blue);">${score}</td>
+                    <td><span class="level-tag ${tagClass}">${tagLabel}</span></td>
+                    <td style="color:var(--text-secondary);">${deltaStr}</td>
+                </tr>
+            `;
+
+            accordionHtml += `
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #e5e5ea;">
+                    <strong style="color:var(--text-primary); font-size:14px;">${dimNames[k]} (${k}) - 得分: ${score}分 (${tagLabel})</strong>
+                    <p style="font-size:13px; color:var(--text-secondary); margin:6px 0 0 0; line-height:1.6;">${getDimDetailText(k, score)}</p>
+                </div>
+            `;
+        });
+        document.getElementById('dimTableBody').innerHTML = tableHtml;
+        document.getElementById('allDimensionsBody').innerHTML = accordionHtml;
+
+        // 12. Quality Check (作答质量)
+        let isStraight = g_userResponses.every(r => r.rawVal === g_userResponses[0].rawVal);
+        let durationSec = (Date.now() - startTime) / 1000;
+        let isFast = durationSec < 45;
+
+        if (isStraight || isFast) {
+            let qualityMsg = '';
+            if (isStraight && isFast) {
+                qualityMsg = '系统检测到您的回答较为集中，且作答速度较快。本次图谱结果仅供轻松参考；重新作答时建议根据您过去半年的通常表现进行选择。';
+            } else if (isStraight) {
+                qualityMsg = '您的回答高度集中，因此各维度之间的差异较小。本次结果仍可作为娱乐参考，但可能无法充分反映您在不同情境中的真实偏好。';
+            } else {
+                qualityMsg = '您的作答速度较快。本次结果正常生成，但如果部分题目没有经过充分考虑，图谱的稳定性可能较低。';
+            }
+            document.getElementById('qualityNoticeText').innerText = qualityMsg;
+            document.getElementById('qualityNoticeBox').style.display = 'block';
+        }
+
+        // 13. Draw Radar Chart
+        drawRadarChart();
+
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+    }
+
+    function getDimDetailText(code, score) {
+        if (score >= 80) return "对该维度的探索方式表现出非常鲜明的偏好，能够在日常思考和解决问题时极其自然地主动调用。";
+        if (score >= 65) return "较为自然地使用这种探索方式，在熟悉或感兴趣的主题中表现尤为明显。";
+        if (score >= 50) return "具备中等倾向，该维度的使用具有较强的情境性，会根据实际任务需要灵活选择。";
+        if (score >= 35) return "通常不会把这种方式作为首选，更可能在明确有需要或特定限制时有意识地调用。";
+        return "较少优先使用这种探索方式，更习惯依赖其他更自然的工具或视角推进理解。";
+    }
+
+    let radarChartObj = null;
+    function drawRadarChart() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        if (radarChartObj) radarChartObj.destroy();
+
+        const labels = ['CQ 好奇', 'EV 证据', 'AN 分析', 'EX 实验', 'SY 系统', 'PR 精确', 'IM 想象', 'CO 协作'];
+        const dataValues = [
+            g_dimScores.CQ, g_dimScores.EV, g_dimScores.AN, g_dimScores.EX,
+            g_dimScores.SY, g_dimScores.PR, g_dimScores.IM, g_dimScores.CO
+        ].map(v => Math.round(v));
+
+        radarChartObj = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '科学特质得分',
+                    data: dataValues,
+                    backgroundColor: 'rgba(0, 113, 227, 0.15)',
+                    borderColor: '#0071e3',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#0071e3',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        ticks: { stepSize: 20, font: { size: 10 } },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
+                        pointLabels: { font: { size: 11, weight: '600' }, color: '#1d1d1f' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    async function generatePDF() {
+        const btn = document.getElementById('downloadPdfBtn');
+        const container = document.getElementById('appContainer');
+        
+        btn.innerText = "⏳ 正在生成高清长图，请稍候...";
+        btn.disabled = true;
+        
+        container.classList.add('pdf-export-mode');
+        window.scrollTo(0, 0);
+        btn.style.display = 'none';
+
+        const detailsEl = container.querySelector('details');
+        let detailsWasOpen = false;
+        if (detailsEl) {
+            detailsWasOpen = detailsEl.open;
+            detailsEl.open = true;
+        }
+
+        await new Promise(r => setTimeout(r, 300));
+
+        try {
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            });
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            const { jsPDF } = window.jspdf;
+            const pdfWidth = 210;
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
+            
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`科学特质图谱测评报告_${Date.now()}.pdf`);
+        } catch (err) {
+            console.error(err);
+            alert("生成长图失败，请尝试用手机屏幕截图保存。");
+        } finally {
+            if (detailsEl) detailsEl.open = detailsWasOpen;
+            container.classList.remove('pdf-export-mode');
+            btn.style.display = 'block';
+            btn.innerText = "📄 保存高清测评长图 (PDF)";
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
